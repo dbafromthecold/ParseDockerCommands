@@ -1,22 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Gist
- @dbafromthecold
- Sign out
- Watch 0
-  Star 0
-  Fork 0 dbafromthecold/parsedockercommands
- Code  Issues 0  Pull requests 0  Projects 0  Wiki  Settings Insights 
-Branch: master Find file Copy pathparsedockercommands/queryrepo
-95a52ad  4 minutes ago
-@dbafromthecold dbafromthecold Update queryrepo
-1 contributor
-RawBlameHistory     
-58 lines (48 sloc)  2.12 KB
 # path to docker.exe and IP of docker host
 $docker = "C:\Program Files\Docker\Docker\resources\bin\Docker.exe"
 $dockerhost = "tcp://XX.XX.XX.XX:2375"
