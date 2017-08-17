@@ -11,47 +11,23 @@ $tlscacert = "--tlscacert=$certpath\ca.pem"
 $tlscert = "--tlscert=$certpath\server-cert.pem"
 $tlskey = "--tlskey=$certpath\server-key.pem"
 
-$images = . $docker --tlsverify $tlscacert $tlscert $tlskey -H $dockerhost images 
-$containers = . $docker --tlsverify $tlscacert $tlscert $tlskey -H $dockerhost ps -a
+function Get-Containers {
+    
+   $fields = "ContainerId","Image","Command","Created","Status","Port","Name"
+   
+   . $docker --tlsverify $tlscacert $tlscert $tlskey -H $dockerhost ps -a |
+       Select-Object -Skip 1 |
+       ConvertFrom-String -Delimiter "[\s]{2,}" -PropertyNames $fields
+}
 
-$imagearray = @()
-$containerarray = @()
+function Get-Images {
+   
+   $fields = "Repository", "Tag", "ImageID", "Created", "VirtualSize"
+   
+   . $docker --tlsverify $tlscacert $tlscert $tlskey -H $dockerhost images |
+      Select-Object -Skip 1 |
+      ConvertFrom-String -Delimiter "[\s]{2,}" -PropertyNames $fields 
+}
 
-foreach($image in $images){    
-    $image = $image | 
-        ConvertFrom-String -Delimiter "[ ]{2,}" -PropertyNames Repository, Tag, ImageID, Created, VirtualSize |
-            where-object {$_.Repository -ne "REPOSITORY"} 
-
-        if($image){
-                $row = New-Object psobject @{
-                    Repository = $image.Repository;
-                    Tag = $image.Tag 
-                    ImageID = $image.ImageID
-                    Created = $image.Created
-                    VirtualSize = $image.VirtualSize
-            }
-        }   
-        $imagearray += $row
-    }
- 
-foreach($container in $containers){
-    $container = $container |
-        ConvertFrom-String -Delimiter "[ ]{2,}" -PropertyNames "ContainerID","Image","Command","Created","Status","Ports","Names" |
-            where-object {$_.ContainerID -ne "CONTAINER ID"} 
-            
-            if($container){
-                $row = New-Object psobject @{
-                        ContainerID = $container.ContainerID 
-                        Image = $container.Image 
-                        Command = $container.Command 
-                        Created = $container.Created 
-                        Status = $container.Status
-                        Ports = $container.Ports
-                        Names = $container.Names
-                }
-            }
-        $containerarray += $row
-    }
-
-# $imagearray        
-# $containerarray
+$containers = Get-Containers
+$images = Get-Images 
